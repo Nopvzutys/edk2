@@ -311,7 +311,7 @@
       # don't use unaligned CopyMem () on the UEFI varstore NOR flash region
       BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
   }
-  SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf
+  # SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf  # Not supported on QEMU virt
 
   #
   # Status Code Routing

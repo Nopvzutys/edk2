@@ -62,7 +62,7 @@ READ_LOCK_STATUS   = TRUE
   INF SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
 !endif
   INF MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
-  INF MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
+  # INF MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf  # Not supported on QEMU virt
   INF EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
   INF MdeModulePkg/Universal/Metronome/Metronome.inf
   INF MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
@@ -80,7 +80,7 @@ READ_LOCK_STATUS   = TRUE
   INF ArmPkg/Drivers/TimerDxe/TimerDxe.inf
   INF OvmfPkg/VirtNorFlashDxe/VirtNorFlashDxe.inf
   INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
-  INF SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf
+  # INF SecurityPkg/RandomNumberGenerator/RngDxe/RngDxe.inf  # Not supported on QEMU virt
 
   #
   # FAT filesystem + GPT/MBR partitioning + UDF filesystem + virtio-fs
