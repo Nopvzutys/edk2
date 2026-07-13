@@ -52,7 +52,9 @@ ArmVirtMonitorLibConstructor (
                         NULL
                         );
   if (EFI_ERROR (Status)) {
-    return Status;
+    // PSCI node not found in DTB, default to SMC conduit
+    mArmSmcccMethod = 2;
+    return EFI_SUCCESS;
   }
 
   if (AsciiStrnCmp (Prop, "hvc", 3) == 0) {
