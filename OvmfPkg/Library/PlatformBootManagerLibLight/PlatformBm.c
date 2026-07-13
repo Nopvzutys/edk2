@@ -1034,26 +1034,64 @@ PlatformBootManagerAfterConsole (
     EfiBootManagerConnectAll ();
   }
 
-  //
-  // Enumerate all possible boot options, then filter and reorder them based on
-  // the QEMU configuration.
-  //
-  EfiBootManagerRefreshAllBootOption ();
+//
+// Register UEFI Shell first so it becomes the default boot option (Boot0000)
+//
+PlatformRegisterFvBootOption (
+  &gUefiShellFileGuid,
+  L"EFI Internal Shell",
+  LOAD_OPTION_ACTIVE,
+  ShellEnabled
+);
 
-  //
-  // Register UEFI Shell
-  //
-  PlatformRegisterFvBootOption (
-    &gUefiShellFileGuid,
-    L"EFI Internal Shell",
-    LOAD_OPTION_ACTIVE | LOAD_OPTION_CATEGORY_APP,
-    ShellEnabled
-    );
+//
+// Enumerate all possible boot options, then filter and reorder them based on
+// the QEMU configuration.
+//
+EfiBootManagerRefreshAllBootOption ();
 
-  RemoveStaleFvFileOptions ();
-  SetBootOrderFromQemu ();
+RemoveStaleFvFileOptions ();
+SetBootOrderFromQemu ();
 
-  PlatformBmPrintScRegisterHandler ();
+//
+// If QEMU didn't provide a boot order, set the internal shell as the first boot option
+//
+{
+  EFI_BOOT_MANAGER_LOAD_OPTION *BootOptions;
+  UINTN                         BootOptionCount;
+  UINT16                        *BootOrder;
+  UINTN                         Index;
+
+  BootOptions = EfiBootManagerGetLoadOptions (&BootOptionCount, LoadOptionTypeBoot);
+  if (BootOptions != NULL) {
+    //
+    // Find the internal shell option
+    //
+    for (Index = 0; Index < BootOptionCount; Index++) {
+      if (StrStr (BootOptions[Index].Description, L"Internal Shell") != NULL) {
+        //
+        // Found the shell, set BootOrder to boot it first
+        //
+        BootOrder = AllocatePool (sizeof (UINT16));
+        if (BootOrder != NULL) {
+          BootOrder[0] = (UINT16)BootOptions[Index].OptionNumber;
+          gRT->SetVariable (
+            L"BootOrder",
+            &gEfiGlobalVariableGuid,
+            EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS,
+            sizeof (UINT16),
+            BootOrder
+            );
+          FreePool (BootOrder);
+        }
+        break;
+      }
+    }
+    EfiBootManagerFreeLoadOptions (BootOptions, BootOptionCount);
+  }
+}
+
+PlatformBmPrintScRegisterHandler ();
 }
 
 /**
